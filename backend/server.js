@@ -23,7 +23,10 @@ app.use(express.json());
 // ---------------- CORS ----------------
 app.use(
   cors({
-    origin: "http://localhost:3000", // frontend URL
+    origin: [
+      "http://localhost:3000",
+      "https://sky9891.github.io", // frontend URL after deployment
+    ],
     credentials: true, // allows cookies/auth headers
   })
 );
