@@ -9,28 +9,32 @@ import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
+// Use env variable for backend or fallback to localhost
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
-
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
-
   const toast = useToast();
 
   const fetchChats = async () => {
-    // console.log(user._id);
     try {
+      const token =
+        user?.token || JSON.parse(localStorage.getItem("userInfo"))?.token;
+      if (!token) return;
+
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
 
-      const { data } = await axios.get("/api/chat", config);
+      const { data } = await axios.get(`${API_URL}/api/chat`, config);
       setChats(data);
     } catch (error) {
       toast({
-        title: "Error Occured!",
-        description: "Failed to Load the chats",
+        title: "Error Occurred!",
+        description: "Failed to load the chats",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -40,9 +44,10 @@ const MyChats = ({ fetchAgain }) => {
   };
 
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    setLoggedUser(userInfo);
     fetchChats();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchAgain]);
 
   return (
@@ -77,6 +82,7 @@ const MyChats = ({ fetchAgain }) => {
           </Button>
         </GroupChatModal>
       </Box>
+
       <Box
         d="flex"
         flexDir="column"

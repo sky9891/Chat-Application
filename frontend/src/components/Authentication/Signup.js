@@ -157,7 +157,7 @@ const postDetails = (pics) => {
         />
       </FormControl>
 
-      <FormControl id="email" isRequired>
+      <FormControl id="email-signup" isRequired>
         <FormLabel>Email Address</FormLabel>
         <Input
           type="email"
@@ -167,7 +167,7 @@ const postDetails = (pics) => {
         />
       </FormControl>
 
-      <FormControl id="password" isRequired>
+      <FormControl id="password-signup" isRequired>
         <FormLabel>Password</FormLabel>
         <InputGroup size="md">
           <Input
