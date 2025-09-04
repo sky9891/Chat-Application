@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+import { Box, Text, Badge } from "@chakra-ui/layout";
 import {
   Menu,
   MenuButton,
@@ -26,8 +26,6 @@ import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "../ChatLoading";
 import { Spinner } from "@chakra-ui/spinner";
 import ProfileModal from "./ProfileModal";
-import NotificationBadge from "react-notification-badge";
-import { Effect } from "react-notification-badge";
 import { getSender } from "../../config/ChatLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
@@ -94,8 +92,6 @@ function SideDrawer() {
   };
 
   const accessChat = async (userId) => {
-    console.log(userId);
-
     try {
       setLoadingChat(true);
       const config = {
@@ -147,11 +143,22 @@ function SideDrawer() {
         <div>
           <Menu>
             <MenuButton p={1}>
-              <NotificationBadge
-                count={notification.length}
-                effect={Effect.SCALE}
-              />
-              <BellIcon fontSize="2xl" m={1} />
+              <Box position="relative" display="inline-block">
+                <BellIcon fontSize="2xl" m={1} />
+                {notification.length > 0 && (
+                  <Badge
+                    colorScheme="red"
+                    borderRadius="full"
+                    position="absolute"
+                    top="-1"
+                    right="-1"
+                    fontSize="0.7em"
+                    px={2}
+                  >
+                    {notification.length}
+                  </Badge>
+                )}
+              </Box>
             </MenuButton>
             <MenuList pl={2}>
               {!notification.length && "No New Messages"}
@@ -181,7 +188,7 @@ function SideDrawer() {
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>
-                <MenuItem>My Profile</MenuItem>{" "}
+                <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
               <MenuItem onClick={logoutHandler}>Logout</MenuItem>

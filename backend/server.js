@@ -1,14 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
+const colors = require("colors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-const colors = require("colors"); // ✅ make console.log colored
 
-// Load env vars
+// Load environment variables
 dotenv.config();
 
 // Connect to MongoDB
@@ -19,12 +19,12 @@ const app = express();
 // Middleware to parse JSON
 app.use(express.json());
 
-// API Routes
+// ---------------- API Routes ----------------
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
-// -------------------------- Deployment ------------------------------
+// ---------------- Deployment ----------------
 const __dirname1 = path.resolve();
 
 if (process.env.NODE_ENV === "production") {
@@ -38,32 +38,32 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running..");
   });
 }
-// -------------------------- Deployment ------------------------------
 
-// Error Handling middlewares
+// ---------------- Error Handling Middlewares ----------------
 app.use(notFound);
 app.use(errorHandler);
 
-// PORT fallback
-const PORT = process.env.PORT || 5000;
+// ---------------- Start Server ----------------
+const PORT = process.env.PORT || 5001;
 
-// Start server
 const server = app.listen(PORT, () =>
   console.log(`🚀 Server running on PORT ${PORT}...`.yellow.bold)
 );
 
-// -------------------------- Socket.io ------------------------------
+// ---------------- Socket.io ----------------
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3000", // frontend URL
   },
 });
 
 io.on("connection", (socket) => {
   console.log("⚡ Connected to socket.io".cyan.bold);
 
+  // Store user data on socket
   socket.on("setup", (userData) => {
+    socket.userData = userData; // ✅ store for later
     socket.join(userData._id);
     socket.emit("connected");
   });
@@ -76,14 +76,13 @@ io.on("connection", (socket) => {
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
-  socket.on("new message", (newMessageRecieved) => {
-    const chat = newMessageRecieved.chat;
-
+  socket.on("new message", (newMessageReceived) => {
+    const chat = newMessageReceived.chat;
     if (!chat.users) return console.log("chat.users not defined");
 
     chat.users.forEach((user) => {
-      if (user._id === newMessageRecieved.sender._id) return;
-      socket.in(user._id).emit("message recieved", newMessageRecieved);
+      if (user._id === newMessageReceived.sender._id) return;
+      socket.in(user._id).emit("message received", newMessageReceived);
     });
   });
 
@@ -92,4 +91,3 @@ io.on("connection", (socket) => {
     socket.leave(socket.userData?._id);
   });
 });
-// -------------------------- Socket.io ------------------------------
