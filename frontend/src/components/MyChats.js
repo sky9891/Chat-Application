@@ -9,7 +9,7 @@ import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
-// Use env variable for backend or fallback to localhost
+// Use environment variable or fallback
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
 const MyChats = ({ fetchAgain }) => {
@@ -47,7 +47,7 @@ const MyChats = ({ fetchAgain }) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setLoggedUser(userInfo);
     fetchChats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [fetchAgain]);
 
   return (

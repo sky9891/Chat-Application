@@ -23,10 +23,7 @@ app.use(express.json());
 // ---------------- CORS ----------------
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://sky9891.github.io", // frontend URL after deployment
-    ],
+    origin: [process.env.FRONTEND_URL || "http://localhost:3000"],
     credentials: true, // allows cookies/auth headers
   })
 );
@@ -66,7 +63,7 @@ const server = app.listen(PORT, () =>
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: [process.env.FRONTEND_URL || "http://localhost:3000"],
     credentials: true,
   },
 });
@@ -74,7 +71,6 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log("⚡ Connected to socket.io".cyan.bold);
 
-  // Store user data on socket
   socket.on("setup", (userData) => {
     socket.userData = userData;
     socket.join(userData._id);

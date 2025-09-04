@@ -15,7 +15,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
 
-// Use environment variable for backend or fallback to localhost
+// Use environment variable or fallback
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 let socket, selectedChatCompare;
 
@@ -38,7 +38,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     ChatState();
 
-  // Fetch messages using Axios with API_URL
   const fetchMessages = useCallback(async () => {
     if (!selectedChat) return;
 
@@ -65,7 +64,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   }, [selectedChat, user, toast]);
 
-  // Send message handler
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
       socket.emit("stop typing", selectedChat._id);
@@ -98,9 +96,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // Initialize socket connection
   useEffect(() => {
-    socket = io(API_URL); // use API_URL here
+    socket = io(API_URL);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
@@ -111,13 +108,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
   }, [user]);
 
-  // Fetch messages on chat change
   useEffect(() => {
     fetchMessages();
     selectedChatCompare = selectedChat;
   }, [selectedChat, fetchMessages]);
 
-  // Listen for new messages
   useEffect(() => {
     const handleMessageReceived = (newMessageRecieved) => {
       if (
@@ -140,7 +135,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
   }, [messages, notification, fetchAgain, setFetchAgain, setNotification]);
 
-  // Typing indicator
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
 
