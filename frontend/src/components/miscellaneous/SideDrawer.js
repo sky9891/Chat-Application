@@ -121,7 +121,7 @@ function SideDrawer() {
   return (
     <>
       <Box
-        d="flex"
+        display="flex" // ✅ fixed
         justifyContent="space-between"
         alignItems="center"
         bg="white"
@@ -132,7 +132,7 @@ function SideDrawer() {
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
             <i className="fas fa-search"></i>
-            <Text d={{ base: "none", md: "flex" }} px={4}>
+            <Text display={{ base: "none", md: "flex" }} px={4}>
               Search User
             </Text>
           </Button>
@@ -202,7 +202,9 @@ function SideDrawer() {
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
           <DrawerBody>
-            <Box d="flex" pb={2}>
+            <Box display="flex" pb={2}>
+              {" "}
+              {/* ✅ fixed */}
               <Input
                 placeholder="Search by name or email"
                 mr={2}
@@ -222,7 +224,8 @@ function SideDrawer() {
                 />
               ))
             )}
-            {loadingChat && <Spinner ml="auto" d="flex" />}
+            {loadingChat && <Spinner ml="auto" display="flex" />}{" "}
+            {/* ✅ fixed */}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

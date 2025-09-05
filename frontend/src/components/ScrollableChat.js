@@ -12,6 +12,12 @@ import { ChatState } from "../Context/ChatProvider";
 const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
 
+  // 🔹 [NEW] Helper function to format time
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <ScrollableFeed>
       {messages &&
@@ -30,6 +36,7 @@ const ScrollableChat = ({ messages }) => {
                 />
               </Tooltip>
             )}
+
             <span
               style={{
                 backgroundColor: `${
@@ -42,7 +49,20 @@ const ScrollableChat = ({ messages }) => {
                 maxWidth: "75%",
               }}
             >
-              {m.content}
+              {/* 🔹 [CHANGED] Wrapped message content in <div> */}
+              <div>{m.content}</div>
+
+              {/* 🔹 [NEW] Timestamp below message */}
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "gray",
+                  textAlign: "right",
+                  marginTop: "2px",
+                }}
+              >
+                {formatTime(m.createdAt)}
+              </div>
             </span>
           </div>
         ))}

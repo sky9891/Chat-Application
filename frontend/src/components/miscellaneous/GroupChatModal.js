@@ -81,7 +81,7 @@ const GroupChatModal = ({ children }) => {
   const handleSubmit = async () => {
     if (!groupChatName || !selectedUsers) {
       toast({
-        title: "Please fill all the feilds",
+        title: "Please fill all the fields",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -135,13 +135,15 @@ const GroupChatModal = ({ children }) => {
           <ModalHeader
             fontSize="35px"
             fontFamily="Work sans"
-            d="flex"
+            display="flex" // ✅ fixed
             justifyContent="center"
           >
             Create Group Chat
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody d="flex" flexDir="column" alignItems="center">
+          <ModalBody display="flex" flexDir="column" alignItems="center">
+            {" "}
+            {/* ✅ fixed */}
             <FormControl>
               <Input
                 placeholder="Chat Name"
@@ -156,7 +158,9 @@ const GroupChatModal = ({ children }) => {
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
-            <Box w="100%" d="flex" flexWrap="wrap">
+            <Box w="100%" display="flex" flexWrap="wrap">
+              {" "}
+              {/* ✅ fixed */}
               {selectedUsers.map((u) => (
                 <UserBadgeItem
                   key={u._id}

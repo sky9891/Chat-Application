@@ -9,11 +9,10 @@ import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
-import Lottie from "react-lottie";
-import animationData from "../animations/typing.json";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
+import TypingIndicator from "../animations/TypingIndicator"; // ✅ new import
 
 // Use environment variable or fallback
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
@@ -27,13 +26,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: { preserveAspectRatio: "xMidYMid slice" },
-  };
 
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     ChatState();
@@ -223,15 +215,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             )}
 
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
-              {istyping && (
-                <div>
-                  <Lottie
-                    options={defaultOptions}
-                    width={70}
-                    style={{ marginBottom: 15 }}
-                  />
-                </div>
-              )}
+              {istyping && <TypingIndicator />}{" "}
+              {/* ✅ clean typing animation */}
               <Input
                 variant="filled"
                 bg="#E0E0E0"
