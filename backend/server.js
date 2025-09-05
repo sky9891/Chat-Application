@@ -28,7 +28,7 @@ const corsOrigins = [
 
 app.use(
   cors({
-    origin: corsOrigins,
+    origin: corsOrigins.length > 0 ? corsOrigins : ["http://localhost:3000"],
     credentials: true,
   })
 );
@@ -68,7 +68,7 @@ const server = app.listen(PORT, () =>
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: [process.env.FRONTEND_URL || "http://localhost:3000"],
+    origin: corsOrigins.length > 0 ? corsOrigins : ["http://localhost:3000"],
     credentials: true,
   },
 });
