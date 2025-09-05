@@ -21,10 +21,15 @@ const app = express();
 app.use(express.json());
 
 // ---------------- CORS ----------------
+const corsOrigins = [
+  process.env.FRONTEND_URL_LOCAL,
+  process.env.FRONTEND_URL_PROD,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL || "http://localhost:3000"],
-    credentials: true, // allows cookies/auth headers
+    origin: corsOrigins,
+    credentials: true,
   })
 );
 
