@@ -1,21 +1,18 @@
-import { AddIcon } from "@chakra-ui/icons";
-import { Box, Stack, Text } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
-import axios from "axios";
+import { Box, Stack, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { getSender } from "../config/ChatLogics";
-import ChatLoading from "./ChatLoading";
-import GroupChatModal from "./miscellaneous/GroupChatModal";
-import { Button } from "@chakra-ui/react";
+import { getSender } from "../config/ChatLogics"; // make sure your file is named ChatLogics.js
 import { ChatState } from "../Context/ChatProvider";
-
-// Use environment variable or fallback
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+import axios from "axios";
+import { socket } from "../config/socket";
+import { useToast } from "@chakra-ui/react";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
   const toast = useToast();
+
+  // Determine API URL
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
   const fetchChats = async () => {
     try {
@@ -24,14 +21,13 @@ const MyChats = ({ fetchAgain }) => {
       if (!token) return;
 
       const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       };
 
       const { data } = await axios.get(`${API_URL}/api/chat`, config);
       setChats(data);
     } catch (error) {
+      console.error("Error fetching chats:", error);
       toast({
         title: "Error Occurred!",
         description: "Failed to load the chats",
@@ -49,6 +45,26 @@ const MyChats = ({ fetchAgain }) => {
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
+
+  // Socket listener for new messages
+  useEffect(() => {
+    socket.on("message received", (newMessage) => {
+      if (!selectedChat || selectedChat._id !== newMessage.chat._id) {
+        // Optional: trigger notification here
+      } else {
+        setChats((prevChats) => {
+          const updatedChats = prevChats.map((chat) =>
+            chat._id === newMessage.chat._id
+              ? { ...chat, latestMessage: newMessage }
+              : chat
+          );
+          return updatedChats;
+        });
+      }
+    });
+
+    return () => socket.off("message received");
+  }, [selectedChat, setChats]);
 
   return (
     <Box
@@ -72,15 +88,6 @@ const MyChats = ({ fetchAgain }) => {
         alignItems="center"
       >
         My Chats
-        <GroupChatModal>
-          <Button
-            d="flex"
-            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-            rightIcon={<AddIcon />}
-          >
-            New Group Chat
-          </Button>
-        </GroupChatModal>
       </Box>
 
       <Box
@@ -113,7 +120,7 @@ const MyChats = ({ fetchAgain }) => {
                 </Text>
                 {chat.latestMessage && (
                   <Text fontSize="xs">
-                    <b>{chat.latestMessage.sender.name} : </b>
+                    <b>{chat.latestMessage.sender.name}: </b>
                     {chat.latestMessage.content.length > 50
                       ? chat.latestMessage.content.substring(0, 51) + "..."
                       : chat.latestMessage.content}
@@ -123,7 +130,7 @@ const MyChats = ({ fetchAgain }) => {
             ))}
           </Stack>
         ) : (
-          <ChatLoading />
+          <Text>Loading chats...</Text>
         )}
       </Box>
     </Box>

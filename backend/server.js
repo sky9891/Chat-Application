@@ -8,16 +8,10 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cors = require("cors");
-
-// Load environment variables
 dotenv.config();
-
-// Connect to MongoDB
 connectDB();
 
 const app = express();
-
-// ---------------- Middleware ----------------
 app.use(express.json());
 
 // ---------------- CORS ----------------
@@ -42,10 +36,8 @@ app.use("/api/message", messageRoutes);
 const frontendBuildPath = path.join(__dirname, "../frontend/build");
 
 if (process.env.NODE_ENV === "production") {
-  // Serve static files from React build
   app.use(express.static(frontendBuildPath));
 
-  // Handle SPA routing, send index.html for any unknown route
   app.get("*", (req, res) => {
     res.sendFile(path.join(frontendBuildPath, "index.html"));
   });
@@ -55,13 +47,12 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// ---------------- Error Handling Middlewares ----------------
+// ---------------- Error Handling ----------------
 app.use(notFound);
 app.use(errorHandler);
 
 // ---------------- Start Server ----------------
 const PORT = process.env.PORT || 5001;
-
 const server = app.listen(PORT, () =>
   console.log(`🚀 Server running on PORT ${PORT}...`.yellow.bold)
 );
