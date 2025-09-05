@@ -17,7 +17,7 @@ connectDB();
 
 const app = express();
 
-// Middleware to parse JSON
+// ---------------- Middleware ----------------
 app.use(express.json());
 
 // ---------------- CORS ----------------
@@ -38,15 +38,17 @@ app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
-// ---------------- Deployment ----------------
-const __dirname1 = path.resolve();
+// ---------------- Serve React Frontend ----------------
+const frontendBuildPath = path.join(__dirname, "../frontend/build");
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname1, "/frontend/build")));
+  // Serve static files from React build
+  app.use(express.static(frontendBuildPath));
 
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
-  );
+  // Handle SPA routing, send index.html for any unknown route
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, "index.html"));
+  });
 } else {
   app.get("/", (req, res) => {
     res.send("API is running..");
