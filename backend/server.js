@@ -8,13 +8,14 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cors = require("cors");
+
 dotenv.config();
 connectDB();
 
 const app = express();
 app.use(express.json());
 
-// ---------------- CORS ----------------
+// CORS config
 const corsOrigins = [
   process.env.FRONTEND_URL_LOCAL,
   process.env.FRONTEND_URL_PROD,
@@ -27,37 +28,31 @@ app.use(
   })
 );
 
-// ---------------- API Routes ----------------
+// API routes
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
-// ---------------- Serve React Frontend ----------------
+// Serve React frontend
 const frontendBuildPath = path.join(__dirname, "../frontend/build");
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(frontendBuildPath));
+app.use(express.static(frontendBuildPath));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, "index.html"));
-  });
-} else {
-  app.get("/", (req, res) => {
-    res.send("API is running..");
-  });
-}
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, "index.html"));
+});
 
-// ---------------- Error Handling ----------------
+// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 
-// ---------------- Start Server ----------------
-const PORT = process.env.PORT || 5001;
+// Start server
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () =>
-  console.log(`🚀 Server running on PORT ${PORT}...`.yellow.bold)
+  console.log(`🚀 Server running on port ${PORT}...`.yellow.bold)
 );
 
-// ---------------- Socket.io ----------------
+// Socket.io config
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
