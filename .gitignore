@@ -15,7 +15,7 @@ build/
 
 # Env files
 <<<<<<< HEAD
-server/.env
+
 =======
 .env
 >>>>>>> 653b17423d7eec9459686f74e79ece5cf3696a8d
