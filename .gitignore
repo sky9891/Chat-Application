@@ -14,7 +14,7 @@ dist/
 build/
 
 # Env files
-.env
+server/.env
 client/.env
 server/.env
 
